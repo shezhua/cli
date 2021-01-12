@@ -607,6 +607,8 @@ func parse(flags *pflag.FlagSet, copts *containerOptions, serverOS string) (*con
 	if flags.Changed("stop-timeout") {
 		config.StopTimeout = &copts.stopTimeout
 	}
+	
+	fmt.Println("Privileged = ", copts.privileged)
 
 	hostConfig := &container.HostConfig{
 		Binds:           binds,

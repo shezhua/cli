@@ -204,6 +204,14 @@ func runUpdate(dockerCli command.Cli, flags *pflag.FlagSet, options *serviceOpti
 		return err
 	}
 
+	if flags.Changed("privileged") {
+		privileged, err := flags.GetBool("privileged")
+		if err != nil {
+			return err
+		}
+		spec.TaskTemplate.ContainerSpec.Privileged = privileged
+	}
+
 	spec.TaskTemplate.ContainerSpec.Configs = updatedConfigs
 
 	// set the credential spec value after get the updated configs, because we
