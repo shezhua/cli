@@ -147,6 +147,7 @@ func Service(
 				Configs:         configs,
 				ReadOnly:        service.ReadOnly,
 				Privileges:      &privileges,
+				Privileged:      service.Privileged,
 				Isolation:       container.Isolation(service.Isolation),
 				Init:            service.Init,
 				Sysctls:         service.Sysctls,

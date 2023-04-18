@@ -466,13 +466,9 @@ func (opts *healthCheckOptions) toHealthConfig() (*container.HealthConfig, error
 }
 
 // convertExtraHostsToSwarmHosts converts an array of extra hosts in cli
-//
-//	<host>:<ip>
-//
+//     <host>:<ip>
 // into a swarmkit host format:
-//
-//	IP_address canonical_hostname [aliases...]
-//
+//     IP_address canonical_hostname [aliases...]
 // This assumes input value (<host>:<ip>) has already been validated
 func convertExtraHostsToSwarmHosts(extraHosts []string) []string {
 	hosts := []string{}
@@ -504,6 +500,7 @@ type serviceOptions struct {
 	stopSignal      string
 	tty             bool
 	readOnly        bool
+	privileged      bool
 	mounts          opts.MountOpt
 	dns             opts.ListOpts
 	dnsSearch       opts.ListOpts
@@ -716,6 +713,7 @@ func (options *serviceOptions) ToService(ctx context.Context, apiClient client.N
 				StopSignal: options.stopSignal,
 				TTY:        options.tty,
 				ReadOnly:   options.readOnly,
+				Privileged: options.privileged,
 				Mounts:     options.mounts.Value(),
 				Init:       &options.init,
 				DNSConfig: &swarm.DNSConfig{
@@ -910,6 +908,8 @@ func addServiceFlags(flags *pflag.FlagSet, opts *serviceOptions, defaultFlagValu
 
 	flags.BoolVar(&opts.readOnly, flagReadOnly, false, "Mount the container's root filesystem as read only")
 	flags.SetAnnotation(flagReadOnly, "version", []string{"1.28"})
+	flags.BoolVar(&opts.privileged, flagPrivileged, false, "Give extended privileges to the service")
+	flags.SetAnnotation(flagPrivileged, "version", []string{"1.35"})
 
 	flags.StringVar(&opts.stopSignal, flagStopSignal, "", "Signal to stop the container")
 	flags.SetAnnotation(flagStopSignal, "version", []string{"1.28"})
@@ -918,7 +918,7 @@ func addServiceFlags(flags *pflag.FlagSet, opts *serviceOptions, defaultFlagValu
 }
 
 const (
-	flagCredentialSpec          = "credential-spec" //nolint:gosec // ignore G101: Potential hardcoded credentials
+	flagCredentialSpec          = "credential-spec"
 	flagPlacementPref           = "placement-pref"
 	flagPlacementPrefAdd        = "placement-pref-add"
 	flagPlacementPrefRemove     = "placement-pref-rm"
@@ -974,6 +974,7 @@ const (
 	flagPublishAdd              = "publish-add"
 	flagQuiet                   = "quiet"
 	flagReadOnly                = "read-only"
+	flagPrivileged              = "privileged"
 	flagReplicas                = "replicas"
 	flagReserveCPU              = "reserve-cpu"
 	flagReserveMemory           = "reserve-memory"
